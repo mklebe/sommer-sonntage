@@ -24,10 +24,8 @@ function reducer(user: User, action: {
     type: string,
     payload: string,
 }): User {
-    alert(`${action.type} ${action.payload}`)
     switch( action.type ) {
         case SET_NAME:
-            alert(action.payload)
             return overWriteUserName(user, action.payload);
         default:
             throw new Error()
