@@ -11,6 +11,10 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+.development.env
+
+/cockroach-data
+
 # OS
 .DS_Store
 
