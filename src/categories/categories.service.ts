@@ -1,0 +1,194 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Category, CategoryDto } from './category.entity';
+import { Repository } from 'typeorm';
+
+@Injectable()
+export class CategoriesService {
+  constructor(
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
+  ) {}
+
+  async getCategoryById(id: number): Promise<Category> {
+    return this.categoryRepository.findOne({ where: { id } });
+  }
+
+  async getCategoriesByYear(year: number): Promise<Array<Category>> {
+    return this.categoryRepository.find({ where: { year } });
+  }
+
+  async initializeCategoriesFor2023(): Promise<void> {
+    this.initializeCategories(predefinedCategories2023);
+  }
+
+  async initializeCategoriesFor2022(): Promise<void> {
+    this.initializeCategories(predefinedCategories2022);
+  }
+
+  async initializeCategoriesFor2021(): Promise<void> {
+    this.initializeCategories(predefinedCategories2021);
+  }
+
+  private async initializeCategories(
+    categoriesDto: Array<CategoryDto>,
+  ): Promise<void> {
+    categoriesDto.forEach(async (category) => {
+      const found = await this.categoryRepository.findOne({
+        where: { name: category.name },
+      });
+      if (!found) {
+        await this.categoryRepository.save(category);
+      }
+    });
+  }
+}
+
+class RadioEinsDate {
+  public dateFormat: Date;
+
+  constructor(private radioEinsFormat: string) {
+    const [datum, uhrzeit] = this.radioEinsFormat.split('_');
+    const [date, month, year] = datum.split('-');
+    const [hour] = uhrzeit.split('-');
+
+    this.dateFormat = new Date(`${year}-${month}-${date}T${hour}:00:00.000Z`);
+
+    console.log(this.dateFormat);
+  }
+}
+
+const predefinedCategories2023: Array<CategoryDto> = [
+  {
+    name: 'Top100BreakUps',
+    year: 2023,
+    airingStartsAt: new RadioEinsDate('16-07-2023_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('16-07-2023_19-00').dateFormat,
+  },
+  {
+    name: 'Top100BodyParts',
+    year: 2023,
+    airingStartsAt: new RadioEinsDate('23-07-2023_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('23-07-2023_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Questions',
+    year: 2023,
+    airingStartsAt: new RadioEinsDate('30-07-2023_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('30-07-2023_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Psychedelic',
+    year: 2023,
+    airingStartsAt: new RadioEinsDate('06-08-2023_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('06-08-2023_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Scandal',
+    year: 2023,
+    airingStartsAt: new RadioEinsDate('13-08-2023_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('13-08-2023_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Water',
+    year: 2023,
+    airingStartsAt: new RadioEinsDate('20-08-2023_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('20-08-2023_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Zero',
+    year: 2023,
+    airingStartsAt: new RadioEinsDate('27-08-2023_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('27-08-2023_19-00').dateFormat,
+  },
+];
+
+const predefinedCategories2022: Array<CategoryDto> = [
+  {
+    name: 'Top100Nineties',
+    year: 2022,
+    airingStartsAt: new RadioEinsDate('21-08-2022_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('21-08-2022_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Rock',
+    year: 2022,
+    airingStartsAt: new RadioEinsDate('14-08-2022_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('14-08-2022_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Clothes',
+    year: 2022,
+    airingStartsAt: new RadioEinsDate('07-08-2022_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('07-08-2022_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Frauen',
+    year: 2022,
+    airingStartsAt: new RadioEinsDate('31-07-2022_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('31-07-2022_19-00').dateFormat,
+  },
+  {
+    name: 'Top100NDW',
+    year: 2022,
+    airingStartsAt: new RadioEinsDate('24-07-2022_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('24-07-2022_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Sex',
+    year: 2022,
+    airingStartsAt: new RadioEinsDate('17-07-2022_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('17-07-2022_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Radio',
+    year: 2022,
+    airingStartsAt: new RadioEinsDate('10-07-2022_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('10-07-2022_19-00').dateFormat,
+  },
+];
+
+const predefinedCategories2021: Array<CategoryDto> = [
+  {
+    name: 'Top100Instrumentals',
+    year: 2021,
+    airingStartsAt: new RadioEinsDate('08-08-2021_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('08-08-2021_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Mobility',
+    year: 2021,
+    airingStartsAt: new RadioEinsDate('01-08-2021_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('01-08-2021_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Eighties',
+    year: 2021,
+    airingStartsAt: new RadioEinsDate('25-07-2021_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('25-07-2021_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Drugs',
+    year: 2021,
+    airingStartsAt: new RadioEinsDate('18-07-2021_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('18-07-2021_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Animals',
+    year: 2021,
+    airingStartsAt: new RadioEinsDate('11-07-2021_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('11-07-2021_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Numbers',
+    year: 2021,
+    airingStartsAt: new RadioEinsDate('04-07-2021_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('04-07-2021_19-00').dateFormat,
+  },
+  {
+    name: 'Top100Family',
+    year: 2021,
+    airingStartsAt: new RadioEinsDate('27-06-2021_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('27-06-2021_19-00').dateFormat,
+  },
+];

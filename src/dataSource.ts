@@ -4,12 +4,13 @@ import { DataSource } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { Category } from './categories/category.entity';
 import { AddsEndOfAiring1687728091223 } from '../migrations/1687728091223-AddsEndOfAiring';
+import { AddsYearToCategory1687812788477 } from '../migrations/1687812788477-AddsYearToCategory';
 
 const postgresConnectionOptions: PostgresConnectionOptions = {
   type: 'postgres',
   logging: true,
   entities: [Category],
-  migrations: [AddsEndOfAiring1687728091223],
+  migrations: [AddsEndOfAiring1687728091223, AddsYearToCategory1687812788477],
   migrationsRun: true,
 };
 
