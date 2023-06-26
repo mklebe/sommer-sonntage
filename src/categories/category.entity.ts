@@ -19,4 +19,9 @@ export class Category {
   @IsDate()
   @Type(() => Date)
   airingStartsAt: Date;
+
+  @CreateDateColumn()
+  @IsDate()
+  @Type(() => Date)
+  airingEndsAt: Date;
 }

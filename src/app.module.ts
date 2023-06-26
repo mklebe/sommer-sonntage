@@ -1,10 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
-import { DataSource } from 'typeorm';
 import { CategoriesModule } from './categories/categories.module';
 import { createTypeOrmConfig, getPostgresDataSource } from './dataSource';
 
@@ -20,15 +18,11 @@ import { createTypeOrmConfig, getPostgresDataSource } from './dataSource';
       inject: [ConfigService],
       useFactory: (config: ConfigService) =>
         createTypeOrmConfig(config, 'DB_CONNECTION_STRING'),
-      dataSourceFactory: (config) => {
-        return getPostgresDataSource(config).initialize();
-      },
+      dataSourceFactory: (config) => getPostgresDataSource(config).initialize(),
     }),
     CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-  constructor(private dataSource: DataSource) {}
-}
+export class AppModule {}

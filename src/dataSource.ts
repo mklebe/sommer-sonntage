@@ -3,17 +3,19 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { Category } from './categories/category.entity';
+import { AddsEndOfAiring1687728091223 } from '../migrations/1687728091223-AddsEndOfAiring';
 
 const postgresConnectionOptions: PostgresConnectionOptions = {
   type: 'postgres',
   logging: true,
   entities: [Category],
-  migrations: [],
+  migrations: [AddsEndOfAiring1687728091223],
   migrationsRun: true,
 };
 
 export function getPostgresDataSource(config) {
-  return new DataSource({ ...postgresConnectionOptions, ...config });
+  const dataSourceConfig = { ...postgresConnectionOptions, ...config };
+  return new DataSource(dataSourceConfig);
 }
 
 export function createTypeOrmConfig(
