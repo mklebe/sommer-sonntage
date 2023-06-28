@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Category } from './category.entity';
+import { BoardLineItem, Category } from './category.entity';
 import { CategoriesService } from './categories.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Category])],
+  imports: [TypeOrmModule.forFeature([Category, BoardLineItem]), HttpModule],
   providers: [CategoriesService],
 })
 export class CategoriesModule {
