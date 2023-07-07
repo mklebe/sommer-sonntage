@@ -95,6 +95,14 @@ export class CategoriesService {
     return board;
   }
 
+  public async getAllBoardByCategory(categorySlug): Promise<BoardLineItem[]> {
+    const category = await this.categoryRepository.findOne({
+      where: { name: categorySlug },
+    });
+
+    return category.board;
+  }
+
   private async initializeCategories(
     categoriesDto: Array<CategoryDto>,
   ): Promise<void> {
@@ -102,7 +110,7 @@ export class CategoriesService {
       const found = await this.categoryRepository.findOne({
         where: { name: category.name },
       });
-      if (!found.isBoardComplete) {
+      if (!found.isUpcoming && !found.isBoardComplete) {
         const categoryBoard = await this.getBoardForCategory(found);
         const board = await this.boardLineItemRepository.save(categoryBoard);
         const categoryWithNewBoard: CategoryDto = {
@@ -112,6 +120,7 @@ export class CategoriesService {
 
         this.categoryRepository.save(categoryWithNewBoard);
       }
+
       if (!found) {
         await this.categoryRepository.save(category);
       }

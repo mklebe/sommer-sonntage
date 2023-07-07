@@ -59,6 +59,7 @@ export class Category {
   }
 
   get isBoardComplete(): boolean {
+    console.log(this.board.length > 1, this.name);
     return this.board.length > 1;
   }
 }

@@ -9,7 +9,7 @@ import { AddBoardToCategory1687986874221 } from '../migrations/1687986874221-Add
 
 const postgresConnectionOptions: PostgresConnectionOptions = {
   type: 'postgres',
-  logging: true,
+  logging: false,
   entities: [Category, BoardLineItem],
   migrations: [
     AddsEndOfAiring1687728091223,
