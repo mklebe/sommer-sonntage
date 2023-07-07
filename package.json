@@ -25,13 +25,16 @@
     "generate:migration": "npm run typeorm -- -p -d ./src/dataSource.ts migration:generate ./migrations/$npm_config_name"
   },
   "dependencies": {
+    "@nestjs/axios": "^3.0.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/typeorm": "^10.0.0",
+    "axios": "^1.4.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "jsdom": "^22.1.0",
     "pg": "^8.11.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

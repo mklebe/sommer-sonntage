@@ -5,6 +5,8 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  OneToMany,
+  ManyToOne,
 } from 'typeorm';
 
 interface Song {
@@ -12,6 +14,9 @@ interface Song {
   title: string;
 }
 
+export interface BoardLineItemDto extends Song {
+  placement: number;
+}
 @Entity()
 export class Category {
   @PrimaryGeneratedColumn()
@@ -22,6 +27,11 @@ export class Category {
 
   @Column()
   year: number;
+
+  @OneToMany(() => BoardLineItem, (boardLineItem) => boardLineItem.category, {
+    eager: true,
+  })
+  board: BoardLineItem[];
 
   @CreateDateColumn()
   @IsDate()
@@ -47,9 +57,31 @@ export class Category {
     const now = new Date();
     return now > this.airingEndsAt;
   }
+
+  get isBoardComplete(): boolean {
+    return this.board.length > 1;
+  }
+}
+
+@Entity()
+export class BoardLineItem implements BoardLineItemDto {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  artist: string;
+
+  @Column()
+  title: string;
+
+  @Column()
+  placement: number;
+
+  @ManyToOne(() => Category, (category) => category.board)
+  category: Category;
 }
 
 export type CategoryDto = Omit<
   Category,
-  'id' | 'isFinished' | 'isUpcoming' | 'isRunning'
+  'id' | 'isFinished' | 'isUpcoming' | 'isRunning' | 'isBoardComplete'
 >;
