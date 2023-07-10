@@ -96,11 +96,19 @@ export class CategoriesService {
   }
 
   public async getAllBoardByCategory(categorySlug): Promise<BoardLineItem[]> {
-    const category = await this.categoryRepository.findOne({
-      where: { name: categorySlug },
-    });
+    return await this.categoryRepository
+      .findOne({
+        where: { name: categorySlug },
+      })
+      .then((result) => {
+        return result.board;
+      })
+      .catch((e) => {
+        console.log(`Could not fetch board from category ${categorySlug}`);
+        console.log(e);
 
-    return category.board;
+        return [];
+      });
   }
 
   private async initializeCategories(
@@ -110,6 +118,11 @@ export class CategoriesService {
       const found = await this.categoryRepository.findOne({
         where: { name: category.name },
       });
+      if (!found) {
+        await this.categoryRepository.save(category);
+        return;
+      }
+
       if (!found.isUpcoming && !found.isBoardComplete) {
         const categoryBoard = await this.getBoardForCategory(found);
         const board = await this.boardLineItemRepository.save(categoryBoard);
@@ -119,10 +132,6 @@ export class CategoriesService {
         };
 
         this.categoryRepository.save(categoryWithNewBoard);
-      }
-
-      if (!found) {
-        await this.categoryRepository.save(category);
       }
     });
   }
