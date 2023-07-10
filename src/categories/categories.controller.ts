@@ -34,7 +34,6 @@ export class CategoriesController {
     @Body() { artist, title }: SongSearchToken,
     @Res() response: Response,
   ): Promise<void> {
-    console.log(artist, title, categorySlug);
     const list = await this.categoriesService.getAllBoardByCategory(
       categorySlug,
     );
