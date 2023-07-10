@@ -95,6 +95,10 @@ export class CategoriesService {
     return board;
   }
 
+  public async getAllConfiguredCategories(): Promise<Category[]> {
+    return this.categoryRepository.find();
+  }
+
   public async getAllBoardByCategory(categorySlug): Promise<BoardLineItem[]> {
     return await this.categoryRepository
       .findOne({

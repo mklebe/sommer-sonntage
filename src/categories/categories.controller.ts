@@ -21,6 +21,11 @@ interface SongSearchToken {
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
+  @Get()
+  async getAllCategories() {
+    return this.categoriesService.getAllConfiguredCategories();
+  }
+
   @Get(':slug')
   async getAllWithCategory(
     @Param('slug') categorySlug: string,
