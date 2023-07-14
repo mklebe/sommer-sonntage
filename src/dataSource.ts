@@ -10,8 +10,8 @@ import { AddFinishedUrlToCategoryNullable1689374094674 } from '../migrations/168
 
 const postgresConnectionOptions: PostgresConnectionOptions = {
   type: 'postgres',
-  logging: ['error'],
-  logger: 'file',
+  logging: false,
+  logger: 'debug',
   entities: [Category, BoardLineItem],
   migrations: [
     AddsEndOfAiring1687728091223,
