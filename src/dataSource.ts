@@ -27,7 +27,6 @@ export function getPostgresDataSource(config) {
   return new DataSource(dataSourceConfig);
 }
 
-
 export function createTypeOrmConfig(
   config: ConfigService,
   databaseConnectionString: string,
