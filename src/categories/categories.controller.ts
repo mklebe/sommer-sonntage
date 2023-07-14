@@ -8,7 +8,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
-import { BoardLineItem } from './category.entity';
+import { BoardLineItem, BoardLineItemDto } from './category.entity';
 import { Response } from 'express';
 import Fuse from 'fuse.js';
 
@@ -23,7 +23,11 @@ export class CategoriesController {
 
   @Get()
   async getAllCategories() {
-    return this.categoriesService.getAllConfiguredCategories();
+    const categories =
+      await this.categoriesService.getAllConfiguredCategories();
+    delete categories[0].board;
+
+    return categories;
   }
 
   @Get(':slug')
@@ -39,6 +43,8 @@ export class CategoriesController {
     @Body() { artist, title }: SongSearchToken,
     @Res() response: Response,
   ): Promise<void> {
+    const cleanedArtist = decodeURIComponent(artist);
+    const cleanedTitle = decodeURIComponent(title);
     const list = await this.categoriesService.getAllBoardByCategory(
       categorySlug,
     );
@@ -46,13 +52,38 @@ export class CategoriesController {
       response.status(HttpStatus.NOT_FOUND).send([]);
     }
 
-    const fuse = new Fuse(list, {
+    const defaultConfig = {
+      shouldSort: true,
+      threshold: 0.1,
       includeScore: true,
-      keys: ['artist', 'title'],
+    };
+
+    const artistSearch = new Fuse(list, {
+      ...defaultConfig,
+      keys: ['artist'],
+    });
+    const titleSearch = new Fuse(list, {
+      ...defaultConfig,
+      keys: ['title'],
     });
 
-    const result = fuse.search(`${artist} ${title}`).map((item) => item.item);
+    const artistHits = artistSearch
+      .search(cleanedArtist)
+      .map((item) => item.item);
+    const titleHits = titleSearch
+      .search(decodeURIComponent(cleanedTitle))
+      .map((item) => item.item);
 
-    response.status(HttpStatus.FOUND).send(result);
+    const [hit] = artistHits.filter((value) => titleHits.includes(value));
+
+    if (hit) {
+      response.status(HttpStatus.OK).send(hit);
+    } else {
+      response.status(HttpStatus.OK).send({
+        artist,
+        title,
+        placement: 0,
+      } as BoardLineItemDto);
+    }
   }
 }

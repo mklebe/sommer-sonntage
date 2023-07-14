@@ -5,6 +5,7 @@ import {
   BoardLineItemDto,
   Category,
   CategoryDto,
+  CategoryModel,
 } from './category.entity';
 import { Repository } from 'typeorm';
 import { JSDOM } from 'jsdom';
@@ -85,14 +86,51 @@ export class CategoriesService {
     this.initializeCategories(initialCategory2021);
   }
 
+  private async getDocumentStringFromUrl(url: string): Promise<string> {
+    return new Promise((resolve) => {
+      this.httpService
+        .get(url, {
+          responseType: 'arraybuffer',
+        })
+        .subscribe((response) => {
+          resolve(response.data.toString('latin1'));
+        });
+    });
+  }
+
+  private getBoardFromFinishedListDocument(
+    documentString: string,
+  ): Array<BoardLineItemDto> {
+    const { document } = new JSDOM(documentString).window;
+    const artistsList: Array<string> = [
+      ...document.querySelectorAll('tr[class^=count] td:nth-child(2)'),
+    ].map((i) => i.textContent);
+    const songList: Array<string> = [
+      ...document.querySelectorAll('tr[class^=count] td:nth-child(3)'),
+    ].map((i) => i.textContent);
+    return songList.map((title, index) => ({
+      placement: index + 1,
+      title,
+      artist: artistsList[index],
+    }));
+  }
+
   private async getBoardForCategory(
-    category: CategoryDto,
+    category: CategoryModel,
   ): Promise<Array<BoardLineItemDto>> {
-    const listScriptUrl = this.getPlaylistUrlForCategory(category);
+    if (category.isFinished && category.finishedListUrl) {
+      const document = await this.getDocumentStringFromUrl(
+        category.finishedListUrl,
+      );
 
-    const board = await this.getBoardFromCategoryUrl(listScriptUrl);
+      const board = this.getBoardFromFinishedListDocument(document);
+      return board;
+    }
 
-    return board;
+    return [];
+
+    // const listScriptUrl = this.getPlaylistUrlForCategory(category);
+    // return this.getBoardFromCategoryUrl(listScriptUrl);
   }
 
   public async getAllConfiguredCategories(): Promise<Category[]> {
@@ -119,16 +157,16 @@ export class CategoriesService {
     categoriesDto: Array<CategoryDto>,
   ): Promise<void> {
     categoriesDto.forEach(async (category) => {
-      const found = await this.categoryRepository.findOne({
+      let found = await this.categoryRepository.findOne({
         where: { name: category.name },
       });
-      if (!found) {
-        await this.categoryRepository.save(category);
-        return;
-      }
 
-      if (!found.isUpcoming && !found.isBoardComplete) {
-        const categoryBoard = await this.getBoardForCategory(found);
+      if (!found) {
+        found = await this.categoryRepository.save(category);
+      }
+      const foundModel = new CategoryModel(found);
+      if (!foundModel.isUpcoming && !foundModel.isBoardComplete) {
+        const categoryBoard = await this.getBoardForCategory(foundModel);
         const board = await this.boardLineItemRepository.save(categoryBoard);
         const categoryWithNewBoard: CategoryDto = {
           ...found,
@@ -170,48 +208,48 @@ const initialCategory2023: Array<CategoryDto> = [
     airingEndsAt: new RadioEinsDate('16-07-2023_19-00').dateFormat,
     board: [],
   },
-  {
-    name: 'Top100BodyParts',
-    year: 2023,
-    airingStartsAt: new RadioEinsDate('23-07-2023_09-00').dateFormat,
-    airingEndsAt: new RadioEinsDate('23-07-2023_19-00').dateFormat,
-    board: [],
-  },
-  {
-    name: 'Top100Questions',
-    year: 2023,
-    airingStartsAt: new RadioEinsDate('30-07-2023_09-00').dateFormat,
-    airingEndsAt: new RadioEinsDate('30-07-2023_19-00').dateFormat,
-    board: [],
-  },
-  {
-    name: 'Top100Psychedelic',
-    year: 2023,
-    airingStartsAt: new RadioEinsDate('06-08-2023_09-00').dateFormat,
-    airingEndsAt: new RadioEinsDate('06-08-2023_19-00').dateFormat,
-    board: [],
-  },
-  {
-    name: 'Top100Scandal',
-    year: 2023,
-    airingStartsAt: new RadioEinsDate('13-08-2023_09-00').dateFormat,
-    airingEndsAt: new RadioEinsDate('13-08-2023_19-00').dateFormat,
-    board: [],
-  },
-  {
-    name: 'Top100Water',
-    year: 2023,
-    airingStartsAt: new RadioEinsDate('20-08-2023_09-00').dateFormat,
-    airingEndsAt: new RadioEinsDate('20-08-2023_19-00').dateFormat,
-    board: [],
-  },
-  {
-    name: 'Top100Zero',
-    year: 2023,
-    airingStartsAt: new RadioEinsDate('27-08-2023_09-00').dateFormat,
-    airingEndsAt: new RadioEinsDate('27-08-2023_19-00').dateFormat,
-    board: [],
-  },
+  // {
+  //   name: 'Top100BodyParts',
+  //   year: 2023,
+  //   airingStartsAt: new RadioEinsDate('23-07-2023_09-00').dateFormat,
+  //   airingEndsAt: new RadioEinsDate('23-07-2023_19-00').dateFormat,
+  //   board: [],
+  // },
+  // {
+  //   name: 'Top100Questions',
+  //   year: 2023,
+  //   airingStartsAt: new RadioEinsDate('30-07-2023_09-00').dateFormat,
+  //   airingEndsAt: new RadioEinsDate('30-07-2023_19-00').dateFormat,
+  //   board: [],
+  // },
+  // {
+  //   name: 'Top100Psychedelic',
+  //   year: 2023,
+  //   airingStartsAt: new RadioEinsDate('06-08-2023_09-00').dateFormat,
+  //   airingEndsAt: new RadioEinsDate('06-08-2023_19-00').dateFormat,
+  //   board: [],
+  // },
+  // {
+  //   name: 'Top100Scandal',
+  //   year: 2023,
+  //   airingStartsAt: new RadioEinsDate('13-08-2023_09-00').dateFormat,
+  //   airingEndsAt: new RadioEinsDate('13-08-2023_19-00').dateFormat,
+  //   board: [],
+  // },
+  // {
+  //   name: 'Top100Water',
+  //   year: 2023,
+  //   airingStartsAt: new RadioEinsDate('20-08-2023_09-00').dateFormat,
+  //   airingEndsAt: new RadioEinsDate('20-08-2023_19-00').dateFormat,
+  //   board: [],
+  // },
+  // {
+  //   name: 'Top100Zero',
+  //   year: 2023,
+  //   airingStartsAt: new RadioEinsDate('27-08-2023_09-00').dateFormat,
+  //   airingEndsAt: new RadioEinsDate('27-08-2023_19-00').dateFormat,
+  //   board: [],
+  // },
 ];
 
 const initialCategory2022: Array<CategoryDto> = [
@@ -221,6 +259,8 @@ const initialCategory2022: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('21-08-2022_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('21-08-2022_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/die-100-besten-2022/die_100_besten_songs_der_90er_jahre/nineties_die_top_100.html',
   },
   {
     name: 'Top100Rock',
@@ -228,6 +268,8 @@ const initialCategory2022: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('14-08-2022_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('14-08-2022_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/die-100-besten-2022/die_100_besten_hard_rock_und_heavy_metal_songs/rock_hard_die_top_100.html',
   },
   {
     name: 'Top100Clothes',
@@ -235,6 +277,8 @@ const initialCategory2022: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('07-08-2022_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('07-08-2022_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/die-100-besten-2022/die_100_besten_songs_ueber_klamotten/jeans_on_die_top_100.html',
   },
   {
     name: 'Top100Frauen',
@@ -242,6 +286,8 @@ const initialCategory2022: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('31-07-2022_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('31-07-2022_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/die-100-besten-2022/die_100_besten_lieder_von_frauen/female_power_die_top_100.html',
   },
   {
     name: 'Top100NDW',
@@ -249,6 +295,8 @@ const initialCategory2022: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('24-07-2022_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('24-07-2022_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/die-100-besten-2022/die_100_besten_ndw_lieder/ich_geb_gas_die_top_100.html',
   },
   {
     name: 'Top100Sex',
@@ -256,6 +304,8 @@ const initialCategory2022: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('17-07-2022_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('17-07-2022_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/die-100-besten-2022/die_100_besten_songs_ueber_sex/lets_talk_about_die_top_100.html',
   },
   {
     name: 'Top100Radio',
@@ -263,6 +313,8 @@ const initialCategory2022: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('10-07-2022_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('10-07-2022_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/die-100-besten-2022/die_100_besten_lieder_uebers_radio/radio_on_die_top_100.html',
   },
 ];
 
@@ -273,6 +325,8 @@ const initialCategory2021: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('08-08-2021_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('08-08-2021_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/die_100_besten_2021/die_100_besten_instrumentallieder/instrumentals_die_top_100.html',
   },
   {
     name: 'Top100Mobility',
@@ -280,6 +334,8 @@ const initialCategory2021: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('01-08-2021_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('01-08-2021_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/die_100_besten_2021/die_100_besten_mobilitaetslieder/on_the_road_die_top_100.html',
   },
   {
     name: 'Top100Eighties',
@@ -287,6 +343,8 @@ const initialCategory2021: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('25-07-2021_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('25-07-2021_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/die_100_besten_2021/die_100_besten_songs_der_80er/eighties_die_top_100.html',
   },
   {
     name: 'Top100Drugs',
@@ -294,6 +352,8 @@ const initialCategory2021: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('18-07-2021_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('18-07-2021_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/die_100_besten_2021/die_100_besten_drogenlieder/flying_high_die_top_100.html',
   },
   {
     name: 'Top100Animals',
@@ -301,6 +361,8 @@ const initialCategory2021: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('11-07-2021_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('11-07-2021_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/die_100_besten_2021/die_100_besten_tierlieder/animals_die_top_100.html',
   },
   {
     name: 'Top100Numbers',
@@ -308,6 +370,8 @@ const initialCategory2021: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('04-07-2021_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('04-07-2021_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/die_100_besten_2021/die_100_besten_zahlenlieder/magic_numbers_die_top_100.html',
   },
   {
     name: 'Top100Family',
@@ -315,5 +379,7 @@ const initialCategory2021: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('27-06-2021_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('27-06-2021_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/die_100_besten_2021/die_100_besten_familienlieder/we_are_family_die_top_100.html',
   },
 ];

@@ -6,15 +6,18 @@ import { BoardLineItem, Category } from './categories/category.entity';
 import { AddsEndOfAiring1687728091223 } from '../migrations/1687728091223-AddsEndOfAiring';
 import { AddsYearToCategory1687812788477 } from '../migrations/1687812788477-AddsYearToCategory';
 import { AddBoardToCategory1687986874221 } from '../migrations/1687986874221-AddBoardToCategory';
+import { AddFinishedUrlToCategoryNullable1689374094674 } from '../migrations/1689374094674-AddFinishedUrlToCategoryNullable';
 
 const postgresConnectionOptions: PostgresConnectionOptions = {
   type: 'postgres',
-  logging: false,
+  logging: ['error'],
+  logger: 'file',
   entities: [Category, BoardLineItem],
   migrations: [
     AddsEndOfAiring1687728091223,
     AddsYearToCategory1687812788477,
     AddBoardToCategory1687986874221,
+    AddFinishedUrlToCategoryNullable1689374094674,
   ],
   migrationsRun: true,
 };

@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import * as admin from 'firebase-admin';
 
 @Controller('tips')
 export class TipsController {
@@ -15,7 +14,6 @@ export class TipsController {
 
   @Post(':slug/:username')
   async setUserTip(@Param('username') userId: string): Promise<any> {
-    console.log(admin.database().ref().ref);
     return {};
   }
 
