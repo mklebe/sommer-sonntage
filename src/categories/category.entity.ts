@@ -95,7 +95,7 @@ export class CategoryModel extends Category {
   }
 
   get isBoardComplete(): boolean {
-    return this.board.length > 100;
+    return this.board.length >= 100;
   }
 
   private isToday(day: Date): boolean {
