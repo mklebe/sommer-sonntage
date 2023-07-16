@@ -45,9 +45,12 @@ export class CategoriesController {
   ): Promise<void> {
     const cleanedArtist = decodeURIComponent(artist);
     const cleanedTitle = decodeURIComponent(title);
-    const list = await this.categoriesService.getAllBoardByCategory(
-      categorySlug,
-    );
+    let list;
+    if (categorySlug === 'Top100Trennungslieder') {
+      list = await this.categoriesService.getTrennungsLieder();
+    } else {
+      list = await this.categoriesService.getAllBoardByCategory(categorySlug);
+    }
     if (!list) {
       response.status(HttpStatus.NOT_FOUND).send([]);
     }

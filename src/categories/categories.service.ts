@@ -34,6 +34,8 @@ export class CategoriesService {
           const lines: BoardLineItemDto[] =
             this.parseRadioPlaylist(songListDocument);
 
+          console.log(lines);
+
           resolve(lines);
         });
     });
@@ -118,13 +120,6 @@ export class CategoriesService {
   private async getBoardForCategory(
     category: CategoryModel,
   ): Promise<Array<BoardLineItemDto>> {
-    if (category.name === 'Top100Trennungslieder') {
-      const listScriptUrl =
-        'https://playlist.funtip.de/playList.do?action=searching&remote=1&version=2&from=16-7-2023_09-00&to=16-7-2023_19-00&jsonp_callback=jQuery224044240703639644585_1627199132642&_=1627199132643';
-
-      console.log(listScriptUrl);
-      return this.getBoardFromCategoryUrl(listScriptUrl);
-    }
     if (category.isFinished && category.finishedListUrl) {
       const document = await this.getDocumentStringFromUrl(
         category.finishedListUrl,
@@ -142,6 +137,13 @@ export class CategoriesService {
 
   public async getAllConfiguredCategories(): Promise<Category[]> {
     return this.categoryRepository.find();
+  }
+
+  public getTrennungsLieder(): Promise<BoardLineItemDto[]> {
+    const listScriptUrl =
+      'https://playlist.funtip.de/playList.do?action=searching&remote=1&version=2&from=16-7-2023_09-00&to=16-7-2023_19-00&jsonp_callback=jQuery224044240703639644585_1627199132642&_=1627199132643';
+
+    return this.getBoardFromCategoryUrl(listScriptUrl);
   }
 
   public async getAllBoardByCategory(categorySlug): Promise<BoardLineItem[]> {
