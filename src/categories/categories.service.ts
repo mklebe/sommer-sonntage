@@ -21,50 +21,50 @@ export class CategoriesService {
     private readonly httpService: HttpService,
   ) {}
 
-  private async getBoardFromCategoryUrl(
-    catUrl: string,
-  ): Promise<Array<BoardLineItemDto>> {
-    return new Promise((resolve) => {
-      this.httpService
-        .get(catUrl, {
-          responseType: 'arraybuffer',
-        })
-        .subscribe((response) => {
-          const songListDocument = response.data.toString('UTF-8');
-          const lines: BoardLineItemDto[] =
-            this.parseRadioPlaylist(songListDocument);
+  // private async getBoardFromCategoryUrl(
+  //   catUrl: string,
+  // ): Promise<Array<BoardLineItemDto>> {
+  //   return new Promise((resolve) => {
+  //     this.httpService
+  //       .get(catUrl, {
+  //         responseType: 'arraybuffer',
+  //       })
+  //       .subscribe((response) => {
+  //         const songListDocument = response.data.toString('UTF-8');
+  //         const lines: BoardLineItemDto[] =
+  //           this.parseRadioPlaylist(songListDocument);
 
-          resolve(lines);
-        });
-    });
-  }
+  //         resolve(lines);
+  //       });
+  //   });
+  // }
 
-  private parseRadioPlaylist(listScript: string): BoardLineItemDto[] {
-    const top100Table = new RegExp('<table(.|\n)*?</table>');
-    let currentPosition = 100;
+  // private parseRadioPlaylist(listScript: string): BoardLineItemDto[] {
+  //   const top100Table = new RegExp('<table(.|\n)*?</table>');
+  //   let currentPosition = 100;
 
-    const { document } = new JSDOM(listScript.match(top100Table)[0]).window;
-    const top100List = [...document.querySelectorAll('tr td:nth-child(2)')];
-    return top100List.map((tableRow) => {
-      const songRow = tableRow.textContent
-        .split('\\n                ')[2]
-        .replace('        ', '');
-      return {
-        placement: currentPosition--,
-        artist: songRow.split(' — ')[0],
-        title: songRow.split(' — ')[1],
-      };
-    });
-  }
+  //   const { document } = new JSDOM(listScript.match(top100Table)[0]).window;
+  //   const top100List = [...document.querySelectorAll('tr td:nth-child(2)')];
+  //   return top100List.map((tableRow) => {
+  //     const songRow = tableRow.textContent
+  //       .split('\\n                ')[2]
+  //       .replace('        ', '');
+  //     return {
+  //       placement: currentPosition--,
+  //       artist: songRow.split(' — ')[0],
+  //       title: songRow.split(' — ')[1],
+  //     };
+  //   });
+  // }
 
-  private getPlaylistUrlForCategory({
-    airingStartsAt,
-    airingEndsAt,
-  }: CategoryDto): string {
-    const start = convertDateToRadioEinsDate(airingStartsAt);
-    const end = convertDateToRadioEinsDate(airingEndsAt);
-    return `https://playlist.funtip.de/playList.do?action=searching&remote=1&version=2&from=${start}&to=${end}&jsonp_callback=jQuery224044240703639644585_1627199132642&_=1627199132643`;
-  }
+  // private getPlaylistUrlForCategory({
+  //   airingStartsAt,
+  //   airingEndsAt,
+  // }: CategoryDto): string {
+  //   const start = convertDateToRadioEinsDate(airingStartsAt);
+  //   const end = convertDateToRadioEinsDate(airingEndsAt);
+  //   return `https://playlist.funtip.de/playList.do?action=searching&remote=1&version=2&from=${start}&to=${end}&jsonp_callback=jQuery224044240703639644585_1627199132642&_=1627199132643`;
+  // }
 
   async getCategoryById(id: number): Promise<Category> {
     return this.categoryRepository.findOne({ where: { id } });
@@ -118,16 +118,14 @@ export class CategoriesService {
   private async getBoardForCategory(
     category: CategoryModel,
   ): Promise<Array<BoardLineItemDto>> {
-    if (category.isFinished && category.finishedListUrl) {
-      const document = await this.getDocumentStringFromUrl(
-        category.finishedListUrl,
-      );
+    console.info(`Starts parsing: ${category.name}`);
+    const document = await this.getDocumentStringFromUrl(
+      category.finishedListUrl,
+    );
 
-      const board = this.getBoardFromFinishedListDocument(document);
-      return board;
-    }
-
-    return [];
+    const board = this.getBoardFromFinishedListDocument(document);
+    console.info(`Parsing: ${category.name} done!`);
+    return board;
 
     // const listScriptUrl = this.getPlaylistUrlForCategory(category);
     // return this.getBoardFromCategoryUrl(listScriptUrl);
@@ -165,7 +163,7 @@ export class CategoriesService {
         found = await this.categoryRepository.save(category);
       }
       const foundModel = new CategoryModel(found);
-      if (!foundModel.isUpcoming && !foundModel.isBoardComplete) {
+      if (!foundModel.isBoardComplete && foundModel.finishedListUrl) {
         const categoryBoard = await this.getBoardForCategory(foundModel);
         const board = await this.boardLineItemRepository.save(categoryBoard);
         const categoryWithNewBoard: CategoryDto = {
@@ -262,7 +260,7 @@ const initialCategory2022: Array<CategoryDto> = [
     airingEndsAt: new RadioEinsDate('21-08-2022_19-00').dateFormat,
     board: [],
     finishedListUrl:
-      'https://www.radioeins.de/musik/top_100/2023/trennungslieder/',
+      'https://www.radioeins.de/musik/top_100/die-100-besten-2022/die_100_besten_songs_der_90er_jahre/nineties_die_top_100.html',
   },
   {
     name: 'Top100Rock',
