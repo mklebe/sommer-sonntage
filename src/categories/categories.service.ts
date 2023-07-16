@@ -118,6 +118,13 @@ export class CategoriesService {
   private async getBoardForCategory(
     category: CategoryModel,
   ): Promise<Array<BoardLineItemDto>> {
+    if (category.name === 'Top100Trennungslieder') {
+      const listScriptUrl =
+        'https://playlist.funtip.de/playList.do?action=searching&remote=1&version=2&from=16-7-2023_09-00&to=16-7-2023_19-00&jsonp_callback=jQuery224044240703639644585_1627199132642&_=1627199132643';
+
+      console.log(listScriptUrl);
+      return this.getBoardFromCategoryUrl(listScriptUrl);
+    }
     if (category.isFinished && category.finishedListUrl) {
       const document = await this.getDocumentStringFromUrl(
         category.finishedListUrl,
@@ -181,7 +188,7 @@ export class CategoriesService {
 
 function convertDateToRadioEinsDate(dateFormat: Date): string {
   const date = dateFormat.getDate();
-  const month = dateFormat.getMonth();
+  const month = dateFormat.getMonth() + 1;
   const year = dateFormat.getFullYear();
   const hour = dateFormat.getHours();
 
@@ -202,7 +209,7 @@ class RadioEinsDate {
 
 const initialCategory2023: Array<CategoryDto> = [
   {
-    name: 'Top100BreakUps',
+    name: 'Top100Trennungslieder',
     year: 2023,
     airingStartsAt: new RadioEinsDate('16-07-2023_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('16-07-2023_19-00').dateFormat,
@@ -260,7 +267,7 @@ const initialCategory2022: Array<CategoryDto> = [
     airingEndsAt: new RadioEinsDate('21-08-2022_19-00').dateFormat,
     board: [],
     finishedListUrl:
-      'https://www.radioeins.de/musik/top_100/die-100-besten-2022/die_100_besten_songs_der_90er_jahre/nineties_die_top_100.html',
+      'https://www.radioeins.de/musik/top_100/2023/trennungslieder/',
   },
   {
     name: 'Top100Rock',
