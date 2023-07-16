@@ -91,11 +91,19 @@ export class CategoryModel extends Category {
   }
 
   get isFinished(): boolean {
-    const now = new Date();
-    return now > this.airingEndsAt;
+    return this.isToday(this.airingEndsAt);
   }
 
   get isBoardComplete(): boolean {
     return this.board.length > 100;
+  }
+
+  private isToday(day: Date): boolean {
+    const today = new Date();
+    return (
+      day.getDate() == today.getDate() &&
+      day.getMonth() == today.getMonth() &&
+      day.getFullYear() == today.getFullYear()
+    );
   }
 }
