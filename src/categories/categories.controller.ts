@@ -37,14 +37,12 @@ export class CategoriesController {
     return this.categoriesService.getAllBoardByCategory(categorySlug);
   }
 
-  @Post('search/:slug')
-  async findSongInCategory(
+  @Post('search/bulk/:slug')
+  async findBulkSongInCategory(
     @Param('slug') categorySlug: string,
-    @Body() { artist, title }: SongSearchToken,
+    @Body() searchList: BoardLineItemDto[],
     @Res() response: Response,
   ): Promise<void> {
-    const cleanedArtist = decodeURIComponent(artist);
-    const cleanedTitle = decodeURIComponent(title);
     const list = await this.categoriesService.getAllBoardByCategory(
       categorySlug,
     );
@@ -53,6 +51,59 @@ export class CategoriesController {
       response.status(HttpStatus.NOT_FOUND).send([]);
     }
 
+    const searchResult: BoardLineItemDto[] = searchList.map(
+      ({ artist, title }) => {
+        const hit = this.searchHit(list, artist, title);
+
+        if (hit) {
+          return hit;
+        } else {
+          return {
+            artist,
+            title,
+            placement: 0,
+          };
+        }
+      },
+    );
+
+    response.status(HttpStatus.OK).send(searchResult);
+  }
+
+  @Post('search/:slug')
+  async findSongInCategory(
+    @Param('slug') categorySlug: string,
+    @Body() { artist, title }: SongSearchToken,
+    @Res() response: Response,
+  ): Promise<void> {
+    const list = await this.categoriesService.getAllBoardByCategory(
+      categorySlug,
+    );
+
+    if (!list) {
+      response.status(HttpStatus.NOT_FOUND).send([]);
+    }
+
+    const hit = this.searchHit(list, artist, title);
+
+    if (hit) {
+      response.status(HttpStatus.OK).send(hit);
+    } else {
+      response.status(HttpStatus.OK).send({
+        artist,
+        title,
+        placement: 0,
+      } as BoardLineItemDto);
+    }
+  }
+
+  private searchHit(
+    list: BoardLineItem[],
+    artist: string,
+    title: string,
+  ): BoardLineItemDto {
+    const cleanedArtist = decodeURIComponent(artist);
+    const cleanedTitle = decodeURIComponent(title);
     const defaultConfig = {
       shouldSort: true,
       threshold: 0.25,
@@ -77,14 +128,6 @@ export class CategoriesController {
 
     const [hit] = artistHits.filter((value) => titleHits.includes(value));
 
-    if (hit) {
-      response.status(HttpStatus.OK).send(hit);
-    } else {
-      response.status(HttpStatus.OK).send({
-        artist,
-        title,
-        placement: 0,
-      } as BoardLineItemDto);
-    }
+    return hit;
   }
 }
