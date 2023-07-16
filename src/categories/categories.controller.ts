@@ -45,19 +45,17 @@ export class CategoriesController {
   ): Promise<void> {
     const cleanedArtist = decodeURIComponent(artist);
     const cleanedTitle = decodeURIComponent(title);
-    let list;
-    if (categorySlug === 'Top100Trennungslieder') {
-      list = await this.categoriesService.getTrennungsLieder();
-    } else {
-      list = await this.categoriesService.getAllBoardByCategory(categorySlug);
-    }
+    const list = await this.categoriesService.getAllBoardByCategory(
+      categorySlug,
+    );
+
     if (!list) {
       response.status(HttpStatus.NOT_FOUND).send([]);
     }
 
     const defaultConfig = {
       shouldSort: true,
-      threshold: 0.1,
+      threshold: 0.25,
       includeScore: true,
     };
 

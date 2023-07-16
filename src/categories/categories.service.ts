@@ -30,11 +30,9 @@ export class CategoriesService {
           responseType: 'arraybuffer',
         })
         .subscribe((response) => {
-          const songListDocument = response.data.toString('latin1');
+          const songListDocument = response.data.toString('UTF-8');
           const lines: BoardLineItemDto[] =
             this.parseRadioPlaylist(songListDocument);
-
-          console.log(lines);
 
           resolve(lines);
         });
@@ -95,7 +93,7 @@ export class CategoriesService {
           responseType: 'arraybuffer',
         })
         .subscribe((response) => {
-          resolve(response.data.toString('latin1'));
+          resolve(response.data.toString('UTF-8'));
         });
     });
   }
@@ -137,13 +135,6 @@ export class CategoriesService {
 
   public async getAllConfiguredCategories(): Promise<Category[]> {
     return this.categoryRepository.find();
-  }
-
-  public getTrennungsLieder(): Promise<BoardLineItemDto[]> {
-    const listScriptUrl =
-      'https://playlist.funtip.de/playList.do?action=searching&remote=1&version=2&from=16-7-2023_09-00&to=16-7-2023_19-00&jsonp_callback=jQuery224044240703639644585_1627199132642&_=1627199132643';
-
-    return this.getBoardFromCategoryUrl(listScriptUrl);
   }
 
   public async getAllBoardByCategory(categorySlug): Promise<BoardLineItem[]> {
@@ -213,52 +204,54 @@ const initialCategory2023: Array<CategoryDto> = [
   {
     name: 'Top100Trennungslieder',
     year: 2023,
-    airingStartsAt: new RadioEinsDate('16-07-2023_09-00').dateFormat,
-    airingEndsAt: new RadioEinsDate('16-07-2023_19-00').dateFormat,
+    airingStartsAt: new RadioEinsDate('16-07-2023_07-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('16-07-2023_17-00').dateFormat,
+    board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/2023/trennungslieder/trennung_top_100.html',
+  },
+  {
+    name: 'Top100BodyParts',
+    year: 2023,
+    airingStartsAt: new RadioEinsDate('23-07-2023_07-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('23-07-2023_17-00').dateFormat,
     board: [],
   },
-  // {
-  //   name: 'Top100BodyParts',
-  //   year: 2023,
-  //   airingStartsAt: new RadioEinsDate('23-07-2023_09-00').dateFormat,
-  //   airingEndsAt: new RadioEinsDate('23-07-2023_19-00').dateFormat,
-  //   board: [],
-  // },
-  // {
-  //   name: 'Top100Questions',
-  //   year: 2023,
-  //   airingStartsAt: new RadioEinsDate('30-07-2023_09-00').dateFormat,
-  //   airingEndsAt: new RadioEinsDate('30-07-2023_19-00').dateFormat,
-  //   board: [],
-  // },
-  // {
-  //   name: 'Top100Psychedelic',
-  //   year: 2023,
-  //   airingStartsAt: new RadioEinsDate('06-08-2023_09-00').dateFormat,
-  //   airingEndsAt: new RadioEinsDate('06-08-2023_19-00').dateFormat,
-  //   board: [],
-  // },
-  // {
-  //   name: 'Top100Scandal',
-  //   year: 2023,
-  //   airingStartsAt: new RadioEinsDate('13-08-2023_09-00').dateFormat,
-  //   airingEndsAt: new RadioEinsDate('13-08-2023_19-00').dateFormat,
-  //   board: [],
-  // },
-  // {
-  //   name: 'Top100Water',
-  //   year: 2023,
-  //   airingStartsAt: new RadioEinsDate('20-08-2023_09-00').dateFormat,
-  //   airingEndsAt: new RadioEinsDate('20-08-2023_19-00').dateFormat,
-  //   board: [],
-  // },
-  // {
-  //   name: 'Top100Zero',
-  //   year: 2023,
-  //   airingStartsAt: new RadioEinsDate('27-08-2023_09-00').dateFormat,
-  //   airingEndsAt: new RadioEinsDate('27-08-2023_19-00').dateFormat,
-  //   board: [],
-  // },
+  {
+    name: 'Top100Questions',
+    year: 2023,
+    airingStartsAt: new RadioEinsDate('30-07-2023_07-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('30-07-2023_17-00').dateFormat,
+    board: [],
+  },
+  {
+    name: 'Top100Psychedelic',
+    year: 2023,
+    airingStartsAt: new RadioEinsDate('06-08-2023_07-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('06-08-2023_17-00').dateFormat,
+    board: [],
+  },
+  {
+    name: 'Top100Scandal',
+    year: 2023,
+    airingStartsAt: new RadioEinsDate('13-08-2023_07-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('13-08-2023_17-00').dateFormat,
+    board: [],
+  },
+  {
+    name: 'Top100Water',
+    year: 2023,
+    airingStartsAt: new RadioEinsDate('20-08-2023_07-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('20-08-2023_17-00').dateFormat,
+    board: [],
+  },
+  {
+    name: 'Top100Zero',
+    year: 2023,
+    airingStartsAt: new RadioEinsDate('27-08-2023_07-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('27-08-2023_17-00').dateFormat,
+    board: [],
+  },
 ];
 
 const initialCategory2022: Array<CategoryDto> = [
