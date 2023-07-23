@@ -8,7 +8,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
-import { BoardLineItem, BoardLineItemDto } from './category.entity';
+import { BoardLineItemDto } from './category.entity';
 import { Response } from 'express';
 import Fuse from 'fuse.js';
 
@@ -33,7 +33,7 @@ export class CategoriesController {
   @Get(':slug')
   async getAllWithCategory(
     @Param('slug') categorySlug: string,
-  ): Promise<Array<BoardLineItem>> {
+  ): Promise<Array<BoardLineItemDto>> {
     return this.categoriesService.getAllBoardByCategory(categorySlug);
   }
 
@@ -98,7 +98,7 @@ export class CategoriesController {
   }
 
   private searchHit(
-    list: BoardLineItem[],
+    list: BoardLineItemDto[],
     artist: string,
     title: string,
   ): BoardLineItemDto {
