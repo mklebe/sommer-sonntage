@@ -126,9 +126,6 @@ export class CategoriesService {
     const board = this.getBoardFromFinishedListDocument(document);
     console.info(`Parsing: ${category.name} done!`);
     return board;
-
-    // const listScriptUrl = this.getPlaylistUrlForCategory(category);
-    // return this.getBoardFromCategoryUrl(listScriptUrl);
   }
 
   public async getAllConfiguredCategories(): Promise<Category[]> {
@@ -143,7 +140,7 @@ export class CategoriesService {
     });
     let result: BoardLineItemDto[] = [];
     const categoryModel = new CategoryModel(category);
-    if (categoryModel.isRunning) {
+    if (!categoryModel.isBoardComplete) {
       const url = this.getPlaylistUrlForCategory(categoryModel);
       result = await this.getBoardFromCategoryUrl(url);
     } else {
@@ -164,6 +161,9 @@ export class CategoriesService {
       if (!found) {
         found = await this.categoryRepository.save(category);
       }
+
+      this.updateFinishedListUrl(found, category);
+
       const foundModel = new CategoryModel(found);
       if (!foundModel.isBoardComplete && foundModel.finishedListUrl) {
         const categoryBoard = await this.getBoardForCategory(foundModel);
@@ -176,6 +176,13 @@ export class CategoriesService {
         this.categoryRepository.save(categoryWithNewBoard);
       }
     });
+  }
+
+  private updateFinishedListUrl(found: Category, category: CategoryDto) {
+    if (!found.finishedListUrl && category.finishedListUrl) {
+      found.finishedListUrl = category.finishedListUrl;
+      this.categoryRepository.save(found);
+    }
   }
 }
 
@@ -216,6 +223,8 @@ const initialCategory2023: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('23-07-2023_07-00').dateFormat,
     airingEndsAt: new RadioEinsDate('23-07-2023_17-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/2023/koerperteile/koerperteile_die_top_100.html',
   },
   {
     name: 'Top100Questions',
