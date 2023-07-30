@@ -61,8 +61,8 @@ export class CategoriesService {
     airingStartsAt,
     airingEndsAt,
   }: CategoryDto): string {
-    const start = convertDateToRadioEinsDate(airingStartsAt);
-    const end = convertDateToRadioEinsDate(airingEndsAt);
+    const start = convertDateToRadioEinsDate(airingStartsAt, '09');
+    const end = convertDateToRadioEinsDate(airingEndsAt, '19');
     return `https://playlist.funtip.de/playList.do?action=searching&remote=1&version=2&from=${start}&to=${end}&jsonp_callback=jQuery224044240703639644585_1627199132642&_=1627199132643`;
   }
 
@@ -187,11 +187,10 @@ export class CategoriesService {
   }
 }
 
-function convertDateToRadioEinsDate(dateFormat: Date): string {
+function convertDateToRadioEinsDate(dateFormat: Date, hour: string): string {
   const date = dateFormat.getDate();
   const month = dateFormat.getMonth() + 1;
   const year = dateFormat.getFullYear();
-  const hour = dateFormat.getHours();
 
   return `${date}-${month}-${year}_${hour}-00`;
 }
