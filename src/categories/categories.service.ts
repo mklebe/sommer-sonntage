@@ -137,6 +137,7 @@ export class CategoriesService {
   ): Promise<BoardLineItemDto[]> {
     const category = await this.categoryRepository.findOne({
       where: { name: categorySlug },
+      cache: true,
     });
     let result: BoardLineItemDto[] = [];
     const categoryModel = new CategoryModel(category);

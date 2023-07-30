@@ -38,6 +38,7 @@ export function createTypeOrmConfig(
     logging: 'all',
     retryDelay: 10_000,
     synchronize: false,
+    cache: true,
   };
   if (useSSL) {
     Object.assign(typeOrmConfig, { ssl: { rejectUnauthorized: false } });
