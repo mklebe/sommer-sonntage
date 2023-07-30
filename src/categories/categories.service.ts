@@ -229,8 +229,8 @@ const initialCategory2023: Array<CategoryDto> = [
   {
     name: 'Top100Questions',
     year: 2023,
-    airingStartsAt: new RadioEinsDate('30-07-2023_07-00').dateFormat,
-    airingEndsAt: new RadioEinsDate('30-07-2023_17-00').dateFormat,
+    airingStartsAt: new RadioEinsDate('30-07-2023_09-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('30-07-2023_19-00').dateFormat,
     board: [],
   },
   {
