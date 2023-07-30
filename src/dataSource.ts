@@ -37,7 +37,7 @@ export function createTypeOrmConfig(
     url: defaultDatabaseUrl,
     logging: 'all',
     retryDelay: 10_000,
-    synchronize: false,
+    synchronize: true,
     cache: true,
   };
   if (useSSL) {
