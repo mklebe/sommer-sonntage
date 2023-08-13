@@ -11,6 +11,7 @@ import { CategoriesService } from './categories.service';
 import { BoardLineItemDto } from './category.entity';
 import { Response } from 'express';
 import Fuse from 'fuse.js';
+import { top100Scandals } from 'datdastorage/2023_scandals';
 
 interface SongSearchToken {
   title: string;
@@ -34,7 +35,11 @@ export class CategoriesController {
   async getAllWithCategory(
     @Param('slug') categorySlug: string,
   ): Promise<Array<BoardLineItemDto>> {
-    return this.categoriesService.getAllBoardByCategory(categorySlug);
+    if (categorySlug === 'Top100Scandal') {
+      return top100Scandals;
+    } else {
+      return this.categoriesService.getAllBoardByCategory(categorySlug);
+    }
   }
 
   @Post('search/bulk/:slug')
@@ -43,9 +48,12 @@ export class CategoriesController {
     @Body() searchList: BoardLineItemDto[],
     @Res() response: Response,
   ): Promise<void> {
-    const list = await this.categoriesService.getAllBoardByCategory(
-      categorySlug,
-    );
+    let list: BoardLineItemDto[];
+    if (categorySlug === 'Top100Scandal') {
+      list = top100Scandals;
+    } else {
+      list = await this.categoriesService.getAllBoardByCategory(categorySlug);
+    }
 
     if (!list) {
       response.status(HttpStatus.NOT_FOUND).send([]);
