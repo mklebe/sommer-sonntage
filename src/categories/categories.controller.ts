@@ -11,7 +11,7 @@ import { CategoriesService } from './categories.service';
 import { BoardLineItemDto } from './category.entity';
 import { Response } from 'express';
 import Fuse from 'fuse.js';
-import { top100Scandals } from 'datdastorage/2023_scandals';
+import { top100Scandals } from '../../datdastorage/2023_scandals';
 
 interface SongSearchToken {
   title: string;
