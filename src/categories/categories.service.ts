@@ -232,6 +232,8 @@ const initialCategory2023: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('30-07-2023_09-00').dateFormat,
     airingEndsAt: new RadioEinsDate('30-07-2023_19-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/2023/fragen/fragen_die_top_100.html',
   },
   {
     name: 'Top100Psychedelic',
@@ -239,6 +241,8 @@ const initialCategory2023: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('06-08-2023_07-00').dateFormat,
     airingEndsAt: new RadioEinsDate('06-08-2023_17-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/2023/psychedelia/psychedelia_die_top_100.html',
   },
   {
     name: 'Top100Scandal',
@@ -246,6 +250,8 @@ const initialCategory2023: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('13-08-2023_07-00').dateFormat,
     airingEndsAt: new RadioEinsDate('13-08-2023_17-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/2023/skandal-songs/skandal_die_top_100.html',
   },
   {
     name: 'Top100Water',
