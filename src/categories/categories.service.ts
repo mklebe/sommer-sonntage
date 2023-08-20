@@ -246,6 +246,8 @@ const initialCategory2023: Array<CategoryDto> = [
     airingStartsAt: new RadioEinsDate('20-08-2023_07-00').dateFormat,
     airingEndsAt: new RadioEinsDate('20-08-2023_17-00').dateFormat,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/2023/wasser/wasser_die_top_100.html',
   },
   {
     name: 'Top100Zero',

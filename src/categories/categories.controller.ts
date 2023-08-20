@@ -12,6 +12,7 @@ import { BoardLineItemDto } from './category.entity';
 import { Response } from 'express';
 import Fuse from 'fuse.js';
 import { top100Scandals } from '../../datdastorage/2023_scandals';
+import { top100Water } from 'datdastorage/2023_water';
 
 interface SongSearchToken {
   title: string;
@@ -37,6 +38,8 @@ export class CategoriesController {
   ): Promise<Array<BoardLineItemDto>> {
     if (categorySlug === 'Top100Scandal') {
       return top100Scandals;
+    } else if (categorySlug === 'Top100Water') {
+      return top100Water;
     } else {
       return this.categoriesService.getAllBoardByCategory(categorySlug);
     }
@@ -51,6 +54,8 @@ export class CategoriesController {
     let list: BoardLineItemDto[];
     if (categorySlug === 'Top100Scandal') {
       list = top100Scandals;
+    } else if (categorySlug === 'Top100Water') {
+      list = top100Water;
     } else {
       list = await this.categoriesService.getAllBoardByCategory(categorySlug);
     }
