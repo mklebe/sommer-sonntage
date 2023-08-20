@@ -1,25 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import {
-  BoardLineItem,
   BoardLineItemDto,
-  Category,
   CategoryDto,
   CategoryModel,
 } from './category.entity';
-import { Repository } from 'typeorm';
 import { JSDOM } from 'jsdom';
 import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class CategoriesService {
-  constructor(
-    @InjectRepository(Category)
-    private categoryRepository: Repository<Category>,
-    @InjectRepository(BoardLineItem)
-    private boardLineItemRepository: Repository<BoardLineItem>,
-    private readonly httpService: HttpService,
-  ) {}
+  constructor(private readonly httpService: HttpService) {}
 
   private async getBoardFromCategoryUrl(
     catUrl: string,
@@ -57,6 +47,14 @@ export class CategoriesService {
     });
   }
 
+  public getAllConfiguredCategories() {
+    return [
+      ...initialCategory2021,
+      ...initialCategory2022,
+      ...initialCategory2023,
+    ];
+  }
+
   private getPlaylistUrlForCategory({
     airingStartsAt,
     airingEndsAt,
@@ -64,26 +62,6 @@ export class CategoriesService {
     const start = convertDateToRadioEinsDate(airingStartsAt, '09');
     const end = convertDateToRadioEinsDate(airingEndsAt, '19');
     return `https://playlist.funtip.de/playList.do?action=searching&remote=1&version=2&from=${start}&to=${end}&jsonp_callback=jQuery224044240703639644585_1627199132642&_=1627199132643`;
-  }
-
-  async getCategoryById(id: number): Promise<Category> {
-    return this.categoryRepository.findOne({ where: { id } });
-  }
-
-  async getCategoriesByYear(year: number): Promise<Array<Category>> {
-    return this.categoryRepository.find({ where: { year } });
-  }
-
-  async initializeCategoriesFor2023(): Promise<void> {
-    this.initializeCategories(initialCategory2023);
-  }
-
-  async initializeCategoriesFor2022(): Promise<void> {
-    this.initializeCategories(initialCategory2022);
-  }
-
-  async initializeCategoriesFor2021(): Promise<void> {
-    this.initializeCategories(initialCategory2021);
   }
 
   private async getDocumentStringFromUrl(url: string): Promise<string> {
@@ -128,59 +106,16 @@ export class CategoriesService {
     return board;
   }
 
-  public async getAllConfiguredCategories(): Promise<Category[]> {
-    return this.categoryRepository.find();
-  }
-
   public async getAllBoardByCategory(
     categorySlug,
   ): Promise<BoardLineItemDto[]> {
-    const allCategories = [
-      ...initialCategory2021,
-      ...initialCategory2022,
-      ...initialCategory2023,
-    ];
+    const allCategories = this.getAllConfiguredCategories();
     const currentCategory = allCategories.find((i) => i.name === categorySlug);
     if (!currentCategory) {
       return Promise.reject('Could not find category');
     }
     const url = this.getPlaylistUrlForCategory(currentCategory);
     return await this.getBoardFromCategoryUrl(url);
-  }
-
-  private async initializeCategories(
-    categoriesDto: Array<CategoryDto>,
-  ): Promise<void> {
-    categoriesDto.forEach(async (category) => {
-      let found = await this.categoryRepository.findOne({
-        where: { name: category.name },
-      });
-
-      if (!found) {
-        found = await this.categoryRepository.save(category);
-      }
-
-      this.updateFinishedListUrl(found, category);
-
-      const foundModel = new CategoryModel(found);
-      if (!foundModel.isBoardComplete && foundModel.finishedListUrl) {
-        const categoryBoard = await this.getBoardForCategory(foundModel);
-        const board = await this.boardLineItemRepository.save(categoryBoard);
-        const categoryWithNewBoard: CategoryDto = {
-          ...found,
-          board,
-        };
-
-        this.categoryRepository.save(categoryWithNewBoard);
-      }
-    });
-  }
-
-  private updateFinishedListUrl(found: Category, category: CategoryDto) {
-    if (!found.finishedListUrl && category.finishedListUrl) {
-      found.finishedListUrl = category.finishedListUrl;
-      this.categoryRepository.save(found);
-    }
   }
 }
 
