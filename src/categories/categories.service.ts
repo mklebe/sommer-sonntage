@@ -135,7 +135,17 @@ export class CategoriesService {
   public async getAllBoardByCategory(
     categorySlug,
   ): Promise<BoardLineItemDto[]> {
-    await this.getBoardFromCategoryUrl(url);
+    const allCategories = [
+      ...initialCategory2021,
+      ...initialCategory2022,
+      ...initialCategory2023,
+    ];
+    const currentCategory = allCategories.find((i) => i.name === categorySlug);
+    if (!currentCategory) {
+      return Promise.reject('Could not find category');
+    }
+    const url = this.getPlaylistUrlForCategory(currentCategory);
+    return await this.getBoardFromCategoryUrl(url);
   }
 
   private async initializeCategories(
