@@ -135,20 +135,7 @@ export class CategoriesService {
   public async getAllBoardByCategory(
     categorySlug,
   ): Promise<BoardLineItemDto[]> {
-    const category = await this.categoryRepository.findOne({
-      where: { name: categorySlug },
-      cache: 3600_000,
-    });
-    let result: BoardLineItemDto[] = [];
-    const categoryModel = new CategoryModel(category);
-    if (!categoryModel.isBoardComplete) {
-      const url = this.getPlaylistUrlForCategory(categoryModel);
-      result = await this.getBoardFromCategoryUrl(url);
-    } else {
-      result = categoryModel.board;
-    }
-
-    return result;
+    await this.getBoardFromCategoryUrl(url);
   }
 
   private async initializeCategories(
