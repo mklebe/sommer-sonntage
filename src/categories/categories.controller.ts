@@ -12,7 +12,7 @@ import { BoardLineItemDto } from './category.entity';
 import { Response } from 'express';
 import Fuse from 'fuse.js';
 import { top100Scandals } from '../../datdastorage/2023_scandals';
-import { top100Water } from 'datdastorage/2023_water';
+import { top100Water } from '../../datdastorage/2023_water';
 
 interface SongSearchToken {
   title: string;
