@@ -16,8 +16,6 @@ export class CategoriesModule {
   }
 
   async initialize() {
-    await this.categoriesService.initializeCategoriesFor2023();
-    await this.categoriesService.initializeCategoriesFor2022();
-    await this.categoriesService.initializeCategoriesFor2021();
+    
   }
 }
