@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import {
-  BoardLineItemDto,
-  CategoryDto,
-  CategoryModel,
-} from './category.entity';
+import { BoardLineItemDto, Category, CategoryDto } from './category.entity';
 import { JSDOM } from 'jsdom';
 import { HttpService } from '@nestjs/axios';
+import { CatSchedulerService } from '../cat-scheduler/cat-scheduler.service';
 
 @Injectable()
 export class CategoriesService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly catSchedulerService: CatSchedulerService,
+  ) {}
 
   private async getBoardFromCategoryUrl(
     catUrl: string,
@@ -47,7 +47,7 @@ export class CategoriesService {
     });
   }
 
-  public getAllConfiguredCategories() {
+  public getAllConfiguredCategories(): CategoryDto[] {
     return [
       ...initialCategory2021,
       ...initialCategory2022,
@@ -64,52 +64,18 @@ export class CategoriesService {
     return `https://playlist.funtip.de/playList.do?action=searching&remote=1&version=2&from=${start}&to=${end}&jsonp_callback=jQuery224044240703639644585_1627199132642&_=1627199132643`;
   }
 
-  private async getDocumentStringFromUrl(url: string): Promise<string> {
-    return new Promise((resolve) => {
-      this.httpService
-        .get(url, {
-          responseType: 'arraybuffer',
-        })
-        .subscribe((response) => {
-          resolve(response.data.toString('UTF-8'));
-        });
-    });
-  }
-
-  private getBoardFromFinishedListDocument(
-    documentString: string,
-  ): Array<BoardLineItemDto> {
-    const { document } = new JSDOM(documentString).window;
-    const artistsList: Array<string> = [
-      ...document.querySelectorAll('tr[class^=count] td:nth-child(2)'),
-    ].map((i) => i.textContent);
-    const songList: Array<string> = [
-      ...document.querySelectorAll('tr[class^=count] td:nth-child(3)'),
-    ].map((i) => i.textContent);
-    return songList.map((title, index) => ({
-      placement: index + 1,
-      title,
-      artist: artistsList[index],
-    }));
-  }
-
-  private async getBoardForCategory(
-    category: CategoryModel,
-  ): Promise<Array<BoardLineItemDto>> {
-    console.info(`Starts parsing: ${category.name}`);
-    const document = await this.getDocumentStringFromUrl(
-      category.finishedListUrl,
-    );
-
-    const board = this.getBoardFromFinishedListDocument(document);
-    console.info(`Parsing: ${category.name} done!`);
-    return board;
-  }
-
   public async getAllBoardByCategory(
     categorySlug,
   ): Promise<BoardLineItemDto[]> {
     const allCategories = this.getAllConfiguredCategories();
+    allCategories.forEach((category) => {
+      const a: Category = {
+        ...category,
+        id: 0,
+      };
+
+      console.log(`Checking ${a.name} ${this.catSchedulerService.isAiring(a)}`);
+    });
     const currentCategory = allCategories.find((i) => i.name === categorySlug);
     if (!currentCategory) {
       return Promise.reject('Could not find category');

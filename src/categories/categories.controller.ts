@@ -23,6 +23,18 @@ interface SongSearchToken {
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
+  private async receiveBoard(
+    categorySlug: string,
+  ): Promise<Array<BoardLineItemDto>> {
+    if (categorySlug === 'Top100Scandal') {
+      return top100Scandals;
+    } else if (categorySlug === 'Top100Water') {
+      return top100Water;
+    } else {
+      return this.categoriesService.getAllBoardByCategory(categorySlug);
+    }
+  }
+
   @Get()
   async getAllCategories() {
     const categories =
@@ -36,13 +48,7 @@ export class CategoriesController {
   async getAllWithCategory(
     @Param('slug') categorySlug: string,
   ): Promise<Array<BoardLineItemDto>> {
-    if (categorySlug === 'Top100Scandal') {
-      return top100Scandals;
-    } else if (categorySlug === 'Top100Water') {
-      return top100Water;
-    } else {
-      return this.categoriesService.getAllBoardByCategory(categorySlug);
-    }
+    return this.receiveBoard(categorySlug);
   }
 
   @Post('search/bulk/:slug')
