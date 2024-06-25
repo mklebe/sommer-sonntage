@@ -22,7 +22,7 @@ const postgresConnectionOptions: PostgresConnectionOptions = {
   migrationsRun: true,
 };
 
-export function getPostgresDataSource(config) {
+export function getPostgresDataSource(config: any) {
   const dataSourceConfig = { ...postgresConnectionOptions, ...config };
   return new DataSource(dataSourceConfig);
 }

@@ -9,7 +9,7 @@ export class CategoriesService {
   constructor(
     private readonly httpService: HttpService,
     private readonly catSchedulerService: CatSchedulerService,
-  ) {}
+  ) { }
 
   private async getBoardFromCategoryUrl(
     catUrl: string,
@@ -65,7 +65,7 @@ export class CategoriesService {
   }
 
   public async getAllBoardByCategory(
-    categorySlug,
+    categorySlug: string,
   ): Promise<BoardLineItemDto[]> {
     const allCategories = this.getAllConfiguredCategories();
     allCategories.forEach((category) => {

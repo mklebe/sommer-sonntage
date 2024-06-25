@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CatSchedulerService } from './cat-scheduler.service';
-import { Category } from 'src/categories/category.entity';
+import { Category } from '../categories/category.entity';
+
 
 function createCategory(airingStartsAt: Date, airingEndsAt: Date): Category {
   return {
