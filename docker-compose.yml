@@ -7,9 +7,3 @@ services:
       - 9901:5432
     environment:
       POSTGRES_PASSWORD: "db_pass"
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 9900:8080
