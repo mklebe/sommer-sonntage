@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { CategoriesModule } from './categories/categories.module';
+import { RankingModule } from './ranking/ranking.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { CategoriesModule } from './categories/categories.module';
       envFilePath: ['.env'],
     }),
     CategoriesModule,
+    RankingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
