@@ -4,16 +4,24 @@
       {
           "src": "src/main.ts",
           "use": "@vercel/node"
+      },
+      {
+        "src": "apps/client",
+        "use": "@vercel/static-build"
       }
   ],
   "routes": [
       {
-          "src": "/(.*)",
+          "src": "/api/(.*)",
           "dest": "src/main.ts",
           "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
           "headers": {
             "Access-Control-Allow-Origin": "*"
           }
+      },
+      {
+        "src": "/(.*)",
+        "dest": "apps/frontend/$1"
       }
   ]
 }
