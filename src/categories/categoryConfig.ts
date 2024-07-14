@@ -3,6 +3,55 @@ import { RadioEinsDate } from './RadioEinsDate';
 
 export const initialCategory2023: Array<CategoryDto> = [
   {
+    name: 'Top100UpNorth',
+    airingStartsAt: new RadioEinsDate('21-07-2024_07-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('21-07-2024_17-00').dateFormat,
+    year: 2024,
+    board: [],
+  },
+  {
+    name: 'Top100CrimeTime',
+    airingStartsAt: new RadioEinsDate('28-07-2024_07-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('28-07-2024_17-00').dateFormat,
+    year: 2024,
+    board: [],
+  },
+  {
+    name: 'Top100EatIt',
+    airingStartsAt: new RadioEinsDate('04-08-2024_07-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('04-08-2024_17-00').dateFormat,
+    year: 2024,
+    board: [],
+  },
+  {
+    name: 'Top100Sixties',
+    airingStartsAt: new RadioEinsDate('11-08-2024_07-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('11-08-2024_17-00').dateFormat,
+    year: 2024,
+    board: [],
+  },
+  {
+    name: 'Top100Work',
+    airingStartsAt: new RadioEinsDate('18-08-2024_07-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('18-08-2024_17-00').dateFormat,
+    year: 2024,
+    board: [],
+  },
+  {
+    name: 'Top100Space',
+    airingStartsAt: new RadioEinsDate('25-08-2024_07-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('25-08-2024_17-00').dateFormat,
+    year: 2024,
+    board: [],
+  },
+  {
+    name: 'Top100Britpop',
+    airingStartsAt: new RadioEinsDate('01-09-2024_07-00').dateFormat,
+    airingEndsAt: new RadioEinsDate('01-09-2024_17-00').dateFormat,
+    year: 2024,
+    board: [],
+  },
+  {
     name: 'Top100Trennungslieder',
     year: 2023,
     airingStartsAt: new RadioEinsDate('16-07-2023_07-00').dateFormat,
