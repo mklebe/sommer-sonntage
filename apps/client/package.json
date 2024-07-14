@@ -1,8 +1,9 @@
 {
-  "name": "@cmf/design-app-client",
+  "name": "sommer-sonntage-client",
   "version": "0.0.0",
   "scripts": {
     "start": "webpack serve",
+    "serve": "webpack serve",
     "build": "webpack build"
   },
   "browserslist": "last 1 years",

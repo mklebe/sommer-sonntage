@@ -3,8 +3,7 @@ import { CategoriesService } from './categories.service';
 import { HttpModule } from '@nestjs/axios';
 import { CategoriesController } from './categories.controller';
 import { CatSchedulerModule } from '../cat-scheduler/cat-scheduler.module';
-import { RankingModule } from 'src/ranking/ranking.module';
-import { RankingService } from 'src/ranking/ranking.service';
+import { RankingModule } from '../ranking/ranking.module';
 
 @Module({
   imports: [HttpModule, CatSchedulerModule, RankingModule],

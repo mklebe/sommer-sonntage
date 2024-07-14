@@ -9,7 +9,7 @@ const webpackConfiguration = {
   devtool: "source-map",
   output: {
     filename: "main.js",
-    path: path.resolve(__dirname, "..", "static"),
+    path: path.resolve(__dirname, "..", "..", "public", "client"),
     publicPath: "/",
   },
   module: {
