@@ -60,14 +60,7 @@ export class CategoriesController {
     @Body() searchList: BoardLineItemDto[],
     @Res() response: Response,
   ): Promise<void> {
-    let list: BoardLineItemDto[];
-    if (categorySlug === 'Top100Scandal') {
-      list = top100Scandals;
-    } else if (categorySlug === 'Top100Water') {
-      list = top100Water;
-    } else {
-      list = await this.categoriesService.getAllBoardByCategory(categorySlug);
-    }
+    const list: BoardLineItemDto[] = await this.receiveBoard(categorySlug);
 
     if (!list) {
       response.status(HttpStatus.NOT_FOUND).send([]);
@@ -98,9 +91,7 @@ export class CategoriesController {
     @Body() { artist, title }: SongSearchToken,
     @Res() response: Response,
   ): Promise<void> {
-    const list = await this.categoriesService.getAllBoardByCategory(
-      categorySlug,
-    );
+    const list: BoardLineItemDto[] = await this.receiveBoard(categorySlug);
 
     if (!list) {
       response.status(HttpStatus.NOT_FOUND).send([]);
