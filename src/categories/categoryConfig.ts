@@ -8,6 +8,8 @@ export const initialCategory2023: Array<CategoryDto> = [
     airingEndsAt: new RadioEinsDate('21-07-2024_17-00').dateFormat,
     year: 2024,
     board: [],
+    finishedListUrl:
+      'https://www.radioeins.de/musik/top_100/2024/up-north/up_north_die_top_100.html',
   },
   {
     name: 'Top100CrimeTime',

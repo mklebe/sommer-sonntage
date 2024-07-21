@@ -13,6 +13,7 @@ import { Response } from 'express';
 import Fuse from 'fuse.js';
 import { top100Scandals } from '../../datdastorage/2023_scandals';
 import { top100Water } from '../../datdastorage/2023_water';
+import { top100UpNorth } from '../../datdastorage/2024_up_north';
 
 interface SongSearchToken {
   title: string;
@@ -26,7 +27,9 @@ export class CategoriesController {
   private async receiveBoard(
     categorySlug: string,
   ): Promise<Array<BoardLineItemDto>> {
-    if (categorySlug === 'Top100Scandal') {
+    if (categorySlug === 'Top100UpNorth') {
+      return top100UpNorth;
+    } else if (categorySlug === 'Top100Scandal') {
       return top100Scandals;
     } else if (categorySlug === 'Top100Water') {
       return top100Water;
