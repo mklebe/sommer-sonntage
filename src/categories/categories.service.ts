@@ -8,6 +8,7 @@ import {
   initialCategory2022,
   initialCategory2023,
 } from './categoryConfig';
+import axios from 'axios';
 
 @Injectable()
 export class CategoriesService {
@@ -19,17 +20,24 @@ export class CategoriesService {
   private async getBoardFromCategoryUrl(
     catUrl: string,
   ): Promise<Array<BoardLineItemDto>> {
-    return new Promise((resolve) => {
-      this.httpService
+    return new Promise((resolve, reject) => {
+      console.log(`Getting board from ${catUrl}`);
+      axios
         .get(catUrl, {
           responseType: 'arraybuffer',
         })
-        .subscribe((response) => {
+        .then((response) => {
+          if (!response.status.toString().startsWith('2')) {
+            reject('Could not get board with url: ' + catUrl);
+          }
           const songListDocument = response.data.toString('UTF-8');
           const lines: BoardLineItemDto[] =
             this.parseRadioPlaylist(songListDocument);
-
           resolve(lines);
+        })
+        .catch((e) => {
+          console.log('Could not get board with url: ' + catUrl);
+          reject(e);
         });
     });
   }
@@ -86,7 +94,10 @@ export class CategoriesService {
       return Promise.reject('Could not find category');
     }
     const url = this.getPlaylistUrlForCategory(currentCategory);
-    return await this.getBoardFromCategoryUrl(url);
+    return this.getBoardFromCategoryUrl(url).catch((e) => {
+      console.log('###### FOOOOOOOOOO');
+      return Promise.resolve([]);
+    });
   }
 }
 

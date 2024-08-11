@@ -40,7 +40,12 @@ export class CategoriesController {
     } else if (categorySlug === 'Top100Water') {
       return top100Water;
     } else {
-      return this.categoriesService.getAllBoardByCategory(categorySlug);
+      return this.categoriesService
+        .getAllBoardByCategory(categorySlug)
+        .catch((e) => {
+          console.log(e);
+          return Promise.resolve([]);
+        });
     }
   }
 
