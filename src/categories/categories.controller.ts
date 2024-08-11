@@ -16,6 +16,7 @@ import { top100Water } from '../../datdastorage/2023_water';
 import { top100UpNorth } from '../../datdastorage/2024_up_north';
 import { crime_songs } from '../../datdastorage/2024_crime';
 import { top100EatIt } from '../../datdastorage/2024_eat_it';
+import { top100sixties } from '../../datdastorage/2024_sixties';
 
 interface SongSearchToken {
   title: string;
@@ -31,6 +32,8 @@ export class CategoriesController {
   ): Promise<Array<BoardLineItemDto>> {
     if (categorySlug === 'Top100EatIt') {
       return top100EatIt;
+    } else if (categorySlug === 'Top100Sixties') {
+      return top100sixties;
     } else if (categorySlug === 'Top100CrimeTime') {
       return crime_songs;
     } else if (categorySlug === 'Top100UpNorth') {
