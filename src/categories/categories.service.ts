@@ -36,26 +36,42 @@ export class CategoriesService {
           resolve(lines);
         })
         .catch((e) => {
-          console.log('Could not get board with url: ' + catUrl);
           reject(e);
         });
     });
   }
 
   private parseRadioPlaylist(listScript: string): BoardLineItemDto[] {
-    const top100Table = new RegExp('<table(.|\n)*?</table>');
     let currentPosition = 100;
 
-    const { document } = new JSDOM(listScript.match(top100Table)[0]).window;
-    const top100List = [...document.querySelectorAll('tr td:nth-child(2)')];
-    return top100List.map((tableRow) => {
-      const songRow = tableRow.textContent
-        .split('\\n                ')[2]
-        .replace('        ', '');
+    const { document } = new JSDOM(listScript).window;
+
+    const top100List = [...document.querySelectorAll('.play_track')];
+    const allTop100Songs = top100List
+      .map((tableRow) => {
+        const time = tableRow.querySelector('.play_time').textContent;
+        const playHour = parseInt(time.split(':')[0]);
+        if (playHour >= 9 && playHour < 19) {
+          const artist = tableRow.querySelector('.trackinterpret').textContent;
+          const title = tableRow.querySelector('.tracktitle').textContent;
+
+          return {
+            time,
+            artist,
+            title,
+          };
+        }
+      })
+      .filter((song) => song);
+
+    const songsSortedByTime = allTop100Songs.slice(0, 100).sort((a, b) => {
+      return a.time.localeCompare(b.time);
+    });
+
+    return songsSortedByTime.map((song) => {
       return {
+        ...song,
         placement: currentPosition--,
-        artist: songRow.split(' — ')[0],
-        title: songRow.split(' — ')[1],
       };
     });
   }
@@ -72,9 +88,7 @@ export class CategoriesService {
     airingStartsAt,
     airingEndsAt,
   }: CategoryDto): string {
-    const start = convertDateToRadioEinsDate(airingStartsAt, '09');
-    const end = convertDateToRadioEinsDate(airingEndsAt, '19');
-    return `https://playlist.funtip.de/playList.do?action=searching&remote=1&version=2&from=${start}&to=${end}&jsonp_callback=jQuery224044240703639644585_1627199132642&_=1627199132643`;
+    return `https://www.radioeins.de/musik/playlists.html`;
   }
 
   public async getAllBoardByCategory(
@@ -95,7 +109,6 @@ export class CategoriesService {
     }
     const url = this.getPlaylistUrlForCategory(currentCategory);
     return this.getBoardFromCategoryUrl(url).catch((e) => {
-      console.log('###### FOOOOOOOOOO');
       return Promise.resolve([]);
     });
   }
