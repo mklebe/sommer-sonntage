@@ -47,26 +47,33 @@ export class CategoriesService {
     const { document } = new JSDOM(listScript).window;
 
     const top100List = [...document.querySelectorAll('.play_track')];
-    const allTop100Songs = top100List
-      .map((tableRow) => {
-        const time = tableRow.querySelector('.play_time').textContent;
-        const playHour = parseInt(time.split(':')[0]);
-        if (playHour >= 9 && playHour < 19) {
-          const artist = tableRow.querySelector('.trackinterpret').textContent;
-          const title = tableRow.querySelector('.tracktitle').textContent;
 
-          return {
-            time,
-            artist,
-            title,
-          };
+    let firstUndefined = 0;
+    const allTop100Songs = top100List.map((tableRow, index) => {
+      const time = tableRow.querySelector('.play_time').textContent;
+      const playHour = parseInt(time.split(':')[0]);
+      if (playHour >= 9 && playHour < 19) {
+        const artist = tableRow.querySelector('.trackinterpret').textContent;
+        const title = tableRow.querySelector('.tracktitle').textContent;
+
+        return {
+          time,
+          artist,
+          title,
+        };
+      } else {
+        if (firstUndefined === 0) {
+          firstUndefined = index;
         }
-      })
-      .filter((song) => song);
-
-    const songsSortedByTime = allTop100Songs.slice(0, 100).sort((a, b) => {
-      return a.time.localeCompare(b.time);
+        return undefined;
+      }
     });
+
+    const songsSortedByTime = allTop100Songs
+      .slice(0, firstUndefined)
+      .sort((a, b) => {
+        return a.time.localeCompare(b.time);
+      });
 
     return songsSortedByTime.map((song) => {
       return {
@@ -88,7 +95,7 @@ export class CategoriesService {
     airingStartsAt,
     airingEndsAt,
   }: CategoryDto): string {
-    return `https://www.radioeins.de/programm/sendungen/sondersendung/playlisten/2024/08/240818_0900.html`;
+    return `https://www.radioeins.de/musik/playlists.html`;
   }
 
   public async getAllBoardByCategory(
