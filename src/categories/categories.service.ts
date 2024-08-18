@@ -88,7 +88,7 @@ export class CategoriesService {
     airingStartsAt,
     airingEndsAt,
   }: CategoryDto): string {
-    return `https://www.radioeins.de/musik/playlists.html`;
+    return `https://www.radioeins.de/programm/sendungen/sondersendung/playlisten/2024/08/240818_0900.html`;
   }
 
   public async getAllBoardByCategory(
