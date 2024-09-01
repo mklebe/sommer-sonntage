@@ -19,6 +19,7 @@ import { top100EatIt } from '../../datdastorage/2024_eat_it';
 import { top100sixties } from '../../datdastorage/2024_sixties';
 import { top100work } from '../../datdastorage/2024_work';
 import { top100space } from '../../datdastorage/2024_space';
+import { top100Britpop } from '../../datdastorage/2024_britpop';
 
 interface SongSearchToken {
   title: string;
@@ -32,7 +33,9 @@ export class CategoriesController {
   private async receiveBoard(
     categorySlug: string,
   ): Promise<Array<BoardLineItemDto>> {
-    if (categorySlug === 'Top100Space') {
+    if (categorySlug === 'Top100Britpop') {
+      return top100Britpop;
+    } else if (categorySlug === 'Top100Space') {
       return top100space;
     } else if (categorySlug === 'Top100Work') {
       return top100work;
